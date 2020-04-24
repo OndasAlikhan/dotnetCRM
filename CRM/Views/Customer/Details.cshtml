@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Detail";
+}
+@{
+    var customer = ViewData["Customer"] as Customer;
+    var customerAccountList = ViewData["CustomerAccountList"] as IList<CustomerAccount>;
+    var filials = ViewData["Filials"] as IList<Filial>;
+}
+
+<div style="display: flex; justify-content: space-between">
+    <h2>CustomerAccount List</h2>
+    <div style="padding: 30px 30px 0 0 "><a asp-controller="CustomerAccount" asp-action="Create" asp-route-custid=@customer.ID class="btn btn-info">New customer account</a></div>
+</div>
+
+<div>
+    <div>@customer.ID </div>
+    <div>@customer.FullName</div>
+    <div>@customer.Phone</div>
+    <table class="table ">
+        <thead class="thead-dark">
+        <tr>
+            
+            <th>ID</th>
+            <th>Filial</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var i in customerAccountList)
+        {
+            <tr id="tableRow">
+                <th>@i.ID</th>
+                @foreach (var j in filials)
+                {
+                    if (j.ID == i.FilialId)
+                    {
+                        <th>@j.Name</th>
+                    }
+                }
+                <th class="btn btn-primary openBtn" onclick="handleOpen(this)" data-cid=@i.ID>See Products</th>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+<script >
+    function handleOpen (obj) {
+        console.log('here')
+        let cid = obj.getAttribute("data-cid");
+        window.location.href = "/CustomerAccount/Index?custaccid="+cid
+    }
+</script>

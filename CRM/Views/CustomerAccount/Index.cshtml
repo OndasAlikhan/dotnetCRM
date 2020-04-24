@@ -1,0 +1,43 @@
+﻿
+@{
+    var products = ViewData["Products"] as IList<Product>;
+    var currentCustAcc = ViewData["CurrentCustomerAccount"] as CustomerAccount;
+    var customer = ViewData["Customer"] as Customer;
+}
+<h2>title</h2>
+<div>
+    <div>@customer.FullName</div>
+    <div>@currentCustAcc.Filial</div>
+</div>
+<div>
+    <table class="table ">
+        <thead class="thead-dark">
+        <tr>
+            @foreach (var i in typeof(Product).GetProperties())
+            {
+                
+                <th>@i.Name</th>
+                
+            }
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var i in products)
+        {
+            <tr id="tableRow">
+                <th>@i.ID</th>
+                <th>@i.Name</th>
+                <th class="btn btn-primary openBtn" asp-controller="Customer" asp-action="Index" asp-route-id=@i.ID onclick="handleRowClicked(this)" data-id=@i.ID>Open</th>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+<script>
+    function handleRowClicked (row) {
+        console.log(row.getAttribute("data-id"))
+        let custId = row.getAttribute("data-id")
+        window.location.href = "/Customer/Details/"+custId
+    }
+</script>
