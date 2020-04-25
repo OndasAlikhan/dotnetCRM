@@ -35,7 +35,7 @@ namespace CRM.Controllers
 
             ViewData["Filials"] = _context.Filials.ToList<Filial>();
             ViewData["Customer"] = _context.Customers.SingleOrDefault(c => c.ID == id) as Customer;
-            ViewData["CustomerAccountList"] = _context.CustomerAccounts.ToList<CustomerAccount>();
+            ViewData["CustomerAccountList"] = _context.CustomerAccounts.Where(c => c.CustomerId == id).ToList<CustomerAccount>();
             return View();
         }
 

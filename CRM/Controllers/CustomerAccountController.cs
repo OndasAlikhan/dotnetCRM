@@ -25,10 +25,13 @@ namespace CRM.Controllers
                 .Select(i => _context.Products.Where(p => p.ID == i.ProductId).SingleOrDefault()).ToList();
             var custAcc = _context.CustomerAccounts.SingleOrDefault(c => c.ID == custaccid);
             var customer = _context.Customers.SingleOrDefault(c => c.ID == custAcc.CustomerId);
+            var filial = _context.Filials.SingleOrDefault(c => c.ID == custAcc.FilialId) as Filial;
 
+            ViewData["CurrentFilial"] = filial;
             ViewData["Customer"] = customer;
             ViewData["CurrentCustomerAccount"] = custAcc;
             ViewData["Products"] = products;
+            
             return View();
         }
 
@@ -51,6 +54,42 @@ namespace CRM.Controllers
             _context.CustomerAccounts.Add(new CustomerAccount {CustomerId = customerId, FilialId = filialId});
             _context.SaveChanges();
             return Redirect("/Customer/Details?id="+customerId);
+        }
+
+        [HttpPost]
+        public IActionResult Delete(IFormCollection collection)
+        {
+            int cId;
+            int.TryParse(collection["custacc"], out cId);
+            _context.CustomerAccounts.Remove(new CustomerAccount{ID=cId});
+            _context.SaveChanges();
+            return Redirect("/Customer/Details?id="+collection["customerId"]);
+
+        }
+
+        [HttpPost]
+        public IActionResult CreateProduct(IFormCollection collection)
+        {
+            var newProduct = new Product {Name = collection["Name"]};
+            _context.Products.Add(newProduct);
+            _context.SaveChanges();
+
+            int caId;
+            int.TryParse(collection["custacc"], out caId);
+            
+            _context.CustomerAccountProducts.Add(new CustomerAccountProduct
+                {ProductId = newProduct.ID, CustomerAccoountId = caId});
+            _context.SaveChanges();
+            return Redirect("/CustomerAccount/Index?custaccid="+caId);
+        }
+
+        [HttpPost]
+        public IActionResult DeleteProduct(IFormCollection collection)
+        {
+            int prodId;
+            int.TryParse(collection["prodId"], out prodId);
+            _context.Products.Remove(new Product {ID = prodId});
+            return Ok();
         }
     }
 }
